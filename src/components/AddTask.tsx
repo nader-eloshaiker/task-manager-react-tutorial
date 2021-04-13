@@ -3,7 +3,6 @@ import moment, { Moment } from 'moment'
 
 import Datetime from 'react-datetime'
 import { TaskData } from '../models/TaskData'
-import { ulid } from 'ulid'
 
 type Props = {
     onAddTask: (newTask: TaskData) => void
@@ -27,7 +26,7 @@ export const AddTask: FC<Props> = ({ onAddTask }: Props) => {
             return
         }
 
-        onAddTask({ text, day, reminder, id: ulid() } as TaskData)
+        onAddTask({ text, day, reminder } as TaskData)
     }
 
     return (

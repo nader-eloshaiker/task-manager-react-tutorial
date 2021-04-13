@@ -1,39 +1,40 @@
+import { useEffect, useState } from 'react'
+
 import { AddTask } from './components/AddTask'
+import { Api } from './services/Api'
 import { Header } from './components/Header'
 import { TaskData } from './models/TaskData'
 import { Tasks } from './components/Tasks'
-import moment from 'moment'
-import { useState } from 'react'
 
 function App() {
     const [showAddTask, setShowAddTask] = useState<boolean>(false)
-    const [tasks, setTasks] = useState<Array<TaskData>>([
-        {
-            id: '1',
-            text: 'Doctors Appointment',
-            reminder: false,
-            day: moment().add({ months: 3 }).toDate(),
-        },
-        {
-            id: '2',
-            text: 'Dentist Appointment',
-            reminder: true,
-            day: moment().add({ days: 3 }).toDate(),
-        },
-    ])
+    const [tasks, setTasks] = useState<Array<TaskData>>([])
+
+    useEffect(() => {
+        const resolvedTasks = async () => {
+            const result = await Api.getTasks()
+            setTasks(result)
+        }
+
+        resolvedTasks()
+    }, [])
 
     // Delete Task
-    const handleDeleteTask = (id: string) => {
+    const handleDeleteTask = async (id: string) => {
+        await Api.deleteTask(id)
         setTasks(tasks.filter((task) => task.id !== id))
     }
 
     // Toggle reminder
-    const handleToggleRemindTask = (id: string) => {
-        setTasks(tasks.map((task) => (task.id === id ? { ...task, reminder: !task.reminder } : task)))
+    const handleToggleRemindTask = async (id: string) => {
+        const task = await Api.getTask(id)
+        const updatedTask = await Api.putTask({ ...task, reminder: !task.reminder })
+        setTasks(tasks.map((taskItem) => (taskItem.id === id ? updatedTask : taskItem)))
     }
 
-    const handleAddTask = (newTask: TaskData) => {
-        setTasks([...tasks, newTask] as Array<TaskData>)
+    const handleAddTask = async (newTask: TaskData) => {
+        const result = await Api.postTask(newTask)
+        setTasks([...tasks, result] as Array<TaskData>)
     }
 
     return (
