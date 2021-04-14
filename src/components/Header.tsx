@@ -1,4 +1,5 @@
 import { Button } from './Button'
+import { useLocation } from 'react-router'
 
 type Props = {
     title?: string
@@ -7,14 +8,17 @@ type Props = {
 }
 
 export const Header = ({ title = 'Task Tracker', onAddTask, showAddTask }: Props) => {
+    const location = useLocation()
     return (
         <header className="header">
             <h1>{title}</h1>
-            <Button
-                color={showAddTask ? 'red' : 'green'}
-                text={showAddTask ? 'Close' : 'Add'}
-                handleClick={onAddTask}
-            />
+            {location.pathname === '/' && (
+                <Button
+                    color={showAddTask ? 'red' : 'green'}
+                    text={showAddTask ? 'Close' : 'Add'}
+                    handleClick={onAddTask}
+                />
+            )}
         </header>
     )
 }
